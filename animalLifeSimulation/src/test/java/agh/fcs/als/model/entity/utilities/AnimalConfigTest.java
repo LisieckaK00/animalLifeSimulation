@@ -1,4 +1,4 @@
-package agh.fcs.als.model.utilities;
+package agh.fcs.als.model.entity.utilities;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,12 +22,12 @@ public class AnimalConfigTest {
     })
     @ParameterizedTest(name = "{6}")
     void throwException_NotValidValues(int startEnergy,
-                                                 int maxEnergy,
-                                                 int energyGainedByEating,
-                                                 int energyNeededToBeReadyForReproduction,
-                                                 int energyUsedForReproduction,
-                                                 int genomeLength,
-                                                 String displayName){
+                                       int maxEnergy,
+                                       int energyGainedByEating,
+                                       int energyNeededToBeReadyForReproduction,
+                                       int energyUsedForReproduction,
+                                       int genomeLength,
+                                       String displayName){
         assertThrows(IllegalArgumentException.class,
                 () -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
                         energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength));
@@ -46,6 +46,6 @@ public class AnimalConfigTest {
                                          int genomeLength,
                                          String displayName){
         assertDoesNotThrow(() -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
-                        energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength));
+                energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength));
     }
 }
