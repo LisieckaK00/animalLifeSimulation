@@ -5,7 +5,8 @@ public record AnimalConfig(int startEnergy,
                            int energyGainedByEating,
                            int energyNeededToBeReadyForReproduction,
                            int energyUsedForReproduction,
-                           int genomeLength
+                           int genomeLength,
+                           Mutation mutation
 ) {
 
     public AnimalConfig {
@@ -15,6 +16,7 @@ public record AnimalConfig(int startEnergy,
         validateEnergyUsedForReproduction(energyUsedForReproduction);
         validateReproductionEnergy(energyNeededToBeReadyForReproduction, energyUsedForReproduction);
         validatePositive(genomeLength, "genomeLength");
+        validateMutation(mutation);
     }
 
     private static void validatePositive(int value, String paramName) {
@@ -39,6 +41,12 @@ public record AnimalConfig(int startEnergy,
     private void validateEnergyUsedForReproduction(int energyUsedForReproduction){
         if(energyUsedForReproduction < 0){
             throw new IllegalArgumentException("energyUsedForReproduction must be equal to or greater than 0.");
+        }
+    }
+
+    private void validateMutation(Mutation mutation){
+        if(mutation == null){
+            throw new IllegalArgumentException("mutation cannot be null.");
         }
     }
 }

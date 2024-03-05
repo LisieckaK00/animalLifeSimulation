@@ -1,12 +1,21 @@
 package agh.fcs.als.model.entity.utilities;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 public class AnimalConfigTest {
+    static Mutation mutation;
+
+    @BeforeEach
+    void setUp(){
+        mutation = mock(Mutation.class);
+    }
 
     @CsvSource({
             "0, 5, 5, 5, 5, 5, 'startEnergy equals to 0'",
@@ -30,7 +39,7 @@ public class AnimalConfigTest {
                                        String displayName){
         assertThrows(IllegalArgumentException.class,
                 () -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
-                        energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength));
+                        energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength, mutation));
     }
 
     @CsvSource({
@@ -46,6 +55,13 @@ public class AnimalConfigTest {
                                          int genomeLength,
                                          String displayName){
         assertDoesNotThrow(() -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
-                energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength));
+                energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength, mutation));
+    }
+
+    @Test
+    void throwException_NullMutation(){
+        assertThrows(IllegalArgumentException.class,
+                () -> new AnimalConfig(5, 10, 5,
+                        5, 5, 5, null));
     }
 }

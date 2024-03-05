@@ -19,6 +19,7 @@ ext {
 dependencies {
     testImplementation "net.jqwik:jqwik:${jqwikVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
+    testImplementation "org.mockito:mockito-core:3.+"
     testImplementation(
             'org.junit.jupiter:junit-jupiter-params:5.8.2'
     )
