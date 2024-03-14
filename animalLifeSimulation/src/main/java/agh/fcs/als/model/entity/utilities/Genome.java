@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Genome {
     private final List<Integer> genes;
-    private int activeGene = 0;
+    private int activeGeneLocation = 0;
 
     public Genome(List<Integer> genes) {
         validateGenes(genes);
@@ -72,12 +72,18 @@ public class Genome {
         }
     }
 
-    public void updateActiveGene() {
-        activeGene = ++activeGene % genes.size();
+    private void updateActiveGene() {
+        activeGeneLocation = ++activeGeneLocation % genes.size();
     }
 
-    public int getActiveGene() {
+    public int getActiveGeneAndUpdate(){
+        int activeGene =  genes.get(activeGeneLocation);
+        updateActiveGene();
         return activeGene;
+    }
+
+    public int getActiveGeneLocation() {
+        return activeGeneLocation;
     }
 
     public List<Integer> getGenes() {
@@ -89,11 +95,19 @@ public class Genome {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Genome genome = (Genome) object;
-        return activeGene == genome.activeGene && genes.equals(genome.genes);
+        return activeGeneLocation == genome.activeGeneLocation && genes.equals(genome.genes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(genes, activeGene);
+        return Objects.hash(genes, activeGeneLocation);
+    }
+
+    @Override
+    public String toString() {
+        return "Genome{" +
+                "genes=" + genes +
+                ", activeGeneLocation=" + activeGeneLocation +
+                '}';
     }
 }

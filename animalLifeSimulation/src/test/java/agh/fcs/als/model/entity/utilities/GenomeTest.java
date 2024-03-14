@@ -13,17 +13,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GenomeTest {
     @Test
-    void testUpdateGene(){
+    void testActiveGeneAndUpdate(){
         // given
         List<Integer> genes = List.of(1,2,3,4,5);
         Genome genome = new Genome(genes);
-        List<Integer> activeGenes = List.of(1,2,3,4,0,1,2);
+        List<Integer> activeGenesLocationAfterUpdate = List.of(1,2,3,4,0,1,2,3);
+        List<Integer> activeGenes = List.of(1,2,3,4,5,1,2,3);
+        int result;
 
-        for (int i=0; i<7; i++){
+        for (int i=0; i<8; i++){
             // when
-            genome.updateActiveGene();
+            result = genome.getActiveGeneAndUpdate();
             // then
-            assertEquals(activeGenes.get(i), genome.getActiveGene());
+            assertEquals(activeGenesLocationAfterUpdate.get(i), genome.getActiveGeneLocation());
+            assertEquals(activeGenes.get(i), result);
         }
     }
     public static Stream<Arguments> genomeNotValidGenes() {
