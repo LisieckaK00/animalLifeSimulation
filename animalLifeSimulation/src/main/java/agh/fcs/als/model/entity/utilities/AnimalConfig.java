@@ -6,6 +6,8 @@ public record AnimalConfig(int startEnergy,
                            int energyNeededToBeReadyForReproduction,
                            int energyUsedForReproduction,
                            int genomeLength,
+                           int minMutationNumber,
+                           int maxMutationNumber,
                            Mutation mutation
 ) {
 
@@ -16,6 +18,7 @@ public record AnimalConfig(int startEnergy,
         validateEnergyUsedForReproduction(energyUsedForReproduction);
         validateReproductionEnergy(energyNeededToBeReadyForReproduction, energyUsedForReproduction);
         validatePositive(genomeLength, "genomeLength");
+        validateMutationNumbers(minMutationNumber, maxMutationNumber, genomeLength);
         validateMutation(mutation);
     }
 
@@ -41,6 +44,18 @@ public record AnimalConfig(int startEnergy,
     private void validateEnergyUsedForReproduction(int energyUsedForReproduction){
         if(energyUsedForReproduction < 0){
             throw new IllegalArgumentException("energyUsedForReproduction must be equal to or greater than 0.");
+        }
+    }
+
+    private void validateMutationNumbers(int minMutationNumber, int maxMutationNumber, int genomeLength){
+        if (minMutationNumber < 0 || minMutationNumber > genomeLength){
+            throw new IllegalArgumentException("minMutationNumber must be between 0 and genomeLength");
+        }
+        if (maxMutationNumber < 0 || maxMutationNumber > genomeLength){
+            throw new IllegalArgumentException("maxMutationNumber must be between 0 and genomeLength");
+        }
+        if (maxMutationNumber < minMutationNumber){
+            throw new IllegalArgumentException("maxMutationNumber must be greater than or equal to minMutationNumber");
         }
     }
 
