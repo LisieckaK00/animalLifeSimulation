@@ -1,5 +1,7 @@
 package agh.fcs.als.model.entity.utilities;
 
+import agh.fcs.als.model.entity.eating.EatStrategy;
+
 public record AnimalConfig(int startEnergy,
                            int maxEnergy,
                            int energyGainedByEating,
@@ -8,6 +10,7 @@ public record AnimalConfig(int startEnergy,
                            int genomeLength,
                            int minMutationNumber,
                            int maxMutationNumber,
+                           EatStrategy eatStrategy,
                            Mutation mutation
 ) {
 
@@ -19,7 +22,8 @@ public record AnimalConfig(int startEnergy,
         validateReproductionEnergy(energyNeededToBeReadyForReproduction, energyUsedForReproduction);
         validatePositive(genomeLength, "genomeLength");
         validateMutationNumbers(minMutationNumber, maxMutationNumber, genomeLength);
-        validateMutation(mutation);
+        validateNotNull(eatStrategy, "eatStrategy");
+        validateNotNull(mutation, "mutation");
     }
 
     private static void validatePositive(int value, String paramName) {
@@ -59,9 +63,9 @@ public record AnimalConfig(int startEnergy,
         }
     }
 
-    private void validateMutation(Mutation mutation){
-        if(mutation == null){
-            throw new IllegalArgumentException("mutation cannot be null.");
+    private void validateNotNull(Object object, String name){
+        if(object == null){
+            throw new IllegalArgumentException(name + " cannot be null.");
         }
     }
 }

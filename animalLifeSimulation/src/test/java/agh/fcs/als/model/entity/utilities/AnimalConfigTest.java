@@ -1,9 +1,14 @@
 package agh.fcs.als.model.entity.utilities;
 
+import agh.fcs.als.model.entity.eating.EatStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,10 +16,12 @@ import static org.mockito.Mockito.mock;
 
 public class AnimalConfigTest {
     static Mutation mutation;
+    static EatStrategy eatStrategy;
 
     @BeforeEach
     void setUp(){
         mutation = mock(Mutation.class);
+        eatStrategy = mock(EatStrategy.class);
     }
 
     @CsvSource({
@@ -46,7 +53,8 @@ public class AnimalConfigTest {
                                        String displayName){
         assertThrows(IllegalArgumentException.class,
                 () -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
-                        energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength, minMutationNumber, maxMutationNumber, mutation));
+                        energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength,
+                        minMutationNumber, maxMutationNumber, eatStrategy, mutation));
     }
 
     @CsvSource({
@@ -64,13 +72,23 @@ public class AnimalConfigTest {
                                          int maxMutationNumber,
                                          String displayName){
         assertDoesNotThrow(() -> new AnimalConfig(startEnergy, maxEnergy, energyGainedByEating,
-                energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength, minMutationNumber, maxMutationNumber, mutation));
+                energyNeededToBeReadyForReproduction, energyUsedForReproduction, genomeLength,
+                minMutationNumber, maxMutationNumber, eatStrategy, mutation));
     }
 
-    @Test
-    void throwException_NullMutation(){
+    static Stream<Arguments> nullObjects(){
+        return Stream.of(
+                Arguments.of(null, null),
+                Arguments.of(eatStrategy, null),
+                Arguments.of(null, mutation)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullObjects")
+    void throwException_NullObjects(EatStrategy eatStrategy, Mutation mutation){
         assertThrows(IllegalArgumentException.class,
                 () -> new AnimalConfig(5, 10, 5,
-                        5, 5, 5, 0, 0, null));
+                        5, 5, 5, 0, 0, eatStrategy, mutation));
     }
 }

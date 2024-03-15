@@ -69,7 +69,31 @@ public class Animal {
         return Optional.of(child);
     }
 
-    public void eat(){}
+    private void verifyEnergyInBounds(){
+        if(energy > config.maxEnergy()){
+            energy = config.maxEnergy();
+        }else if(energy < 0){
+            energy = 0;
+        }
+    }
+
+    public boolean eat(Food food){
+        if(food == null){
+            throw new IllegalArgumentException("food cannot be null");
+        }
+        if(food.position() != position){
+            throw new IllegalArgumentException("animal can only eat food on the same position");
+        }
+
+        if(config.eatStrategy().eat(food)){
+            int energyGainedByEating = food.isPoisonous() ?
+                    -config.energyGainedByEating() : config.energyGainedByEating();
+            energy += energyGainedByEating;
+            verifyEnergyInBounds();
+            return true;
+        }
+        return false;
+    }
 
     private Animal createChild(List<Integer> childGenes){
         return new Animal.Builder(this.config)

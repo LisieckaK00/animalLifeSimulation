@@ -1,5 +1,6 @@
 package agh.fcs.als.model.entity;
 
+import agh.fcs.als.model.entity.eating.EatStrategy;
 import agh.fcs.als.model.entity.utilities.AnimalConfig;
 import agh.fcs.als.model.entity.utilities.Genome;
 import agh.fcs.als.model.entity.utilities.Mutation;
@@ -23,12 +24,14 @@ import static org.mockito.Mockito.*;
 public class AnimalTest {
     static AnimalConfig config;
     static Genome genome;
+    static EatStrategy eatStrategy;
     static Mutation mutation;
 
     @BeforeEach
     void setUp(){
         mutation = mock(Mutation.class);
-        config = new AnimalConfig(5, 100, 10, 10, 10, 3, 0, 0, mutation);
+        eatStrategy = mock(EatStrategy.class);
+        config = new AnimalConfig(5, 100, 3, 10, 10, 3, 0, 0, eatStrategy, mutation);
         genome = mock(Genome.class);
     }
 
@@ -298,4 +301,101 @@ public class AnimalTest {
         // then
         assertThrows(IllegalStateException.class, () -> animal.move(moveValidator));
     }
+
+    @Test
+    void eatNullArgument(){
+        // given
+        Animal animal = new Animal.Builder(config).build();
+
+        // when trying to pass null to eat()
+        // then
+        assertThrows(IllegalArgumentException.class, () -> animal.eat(null));
+    }
+
+    @Test
+    void eatFoodOnDifferentPosition(){
+        // given
+        Animal animal = new Animal.Builder(config)
+                .setPosition(new Vector2d(1,1))
+                .build();
+        Food food = mock(Food.class);
+        when(food.position()).thenReturn(new Vector2d(1,2));
+
+        // when trying to eat food on different position
+        // then
+        assertThrows(IllegalArgumentException.class, () -> animal.eat(food));
+    }
+
+    @Test
+    void eatWhenEnergyIsFull(){
+        //given
+        Animal animal = new Animal.Builder(config)
+                .setEnergy(config.maxEnergy())
+                .build();
+        Food food = mock(Food.class);
+        when(food.position()).thenReturn(animal.getPosition());
+
+        // when trying to eat while animal is full
+        // then
+        assertFalse(animal.eat(food));
+    }
+
+    static Stream<Arguments> eatData(){
+        return Stream.of(
+                Arguments.of(true, true, config.startEnergy()-config.energyGainedByEating()),
+                Arguments.of(false, true, config.startEnergy()+config.energyGainedByEating()),
+                Arguments.of(true, false, config.startEnergy()),
+                Arguments.of(false, false, config.startEnergy())
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("eatData")
+    void testEat(boolean foodIsPoisonous, boolean foodShouldBeEaten, int finalEnergy){
+        // given
+        Animal animal = new Animal.Builder(config).build();
+        Food food = mock(Food.class);
+        when(food.position()).thenReturn(animal.getPosition());
+        when(food.isPoisonous()).thenReturn(foodIsPoisonous);
+        when(eatStrategy.eat(food)).thenReturn(foodShouldBeEaten);
+
+        // when trying to eat food
+        // then
+        assertEquals(foodShouldBeEaten, animal.eat(food));
+        assertEquals(finalEnergy, animal.getEnergy());
+    }
+
+    @Test
+    void eatPoisonedFoodWithLowEnergy(){
+        // given
+        Animal animal = new Animal.Builder(config)
+                .setEnergy(config.energyGainedByEating()-1)
+                .build();
+        Food food = mock(Food.class);
+        when(food.position()).thenReturn(animal.getPosition());
+        when(food.isPoisonous()).thenReturn(true);
+        when(eatStrategy.eat(food)).thenReturn(true);
+
+        // when trying to eat poisoned food having less energy than energyGainedByEating
+        // then
+        assertTrue(animal.eat(food));
+        assertEquals(0, animal.getEnergy());
+    }
+
+    @Test
+    void eatNotPoisonedFoodWithHighEnergy(){
+        // given
+        Animal animal = new Animal.Builder(config)
+                .setEnergy(config.maxEnergy()-config.energyGainedByEating()+1)
+                .build();
+        Food food = mock(Food.class);
+        when(food.position()).thenReturn(animal.getPosition());
+        when(food.isPoisonous()).thenReturn(false);
+        when(eatStrategy.eat(food)).thenReturn(true);
+
+        // when trying to eat not poisoned food having energy nearly maxEnergy
+        // then
+        assertTrue(animal.eat(food));
+        assertEquals(config.maxEnergy(), animal.getEnergy());
+    }
+
 }
